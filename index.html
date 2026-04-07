@@ -22,13 +22,70 @@
 <script type="text/babel">
 const { useState, useEffect, useRef } = React;
 
-// ✅ Google Apps Script 배포 URL을 여기에 붙여넣으세요
 const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxPx2whIUtplzFi3jICbEAxUCwBxOkjrgioRGFXarhtPKnztGnTEO26qOqIOBvBSKkJeA/exec";
 
 const lessons = [
+  // ─────────────────────────────────────────────────────────
+  // 레슨 1: 선택자
+  // ─────────────────────────────────────────────────────────
   {
     id: 1, category: "기초", title: "선택자 (Selectors)", emoji: "🎯",
     description: "CSS 선택자는 스타일을 적용할 HTML 요소를 지정합니다. 태그, 클래스, ID 선택자를 배워봅시다.",
+    conceptDetail: [
+      {
+        title: "🌟 CSS란 무엇인가요?",
+        text: "CSS(Cascading Style Sheets)는 웹페이지의 모양을 꾸미는 언어입니다. HTML이 건물의 '뼈대'라면, CSS는 '인테리어'입니다. 글자 색상, 크기, 배경, 위치 등 모든 시각적인 부분을 CSS로 설정합니다.",
+      },
+      {
+        title: "📝 CSS 기본 문법 — 꼭 외우세요!",
+        text: "CSS는 선택자 { 속성: 값; } 형태로 작성합니다. 세 가지 부분으로 나뉩니다.",
+        code: `선택자 {\n  속성: 값;\n  속성: 값;\n}`,
+        codeLines: [
+          { token: "선택자", explain: "누구에게 스타일을 줄지 — 예: p, .box, #title" },
+          { token: "{ }", explain: "중괄호 — 스타일 규칙들을 담는 그릇 (반드시 열고 닫아야 함)" },
+          { token: "속성: 값;", explain: "무엇을 어떻게 바꿀지 — color: red; / font-size: 16px;" },
+          { token: ";(세미콜론)", explain: "각 속성의 끝에 반드시 붙여야 합니다!" },
+        ]
+      },
+      {
+        title: "🏷️ ① 태그 선택자 — 태그 이름을 그대로",
+        text: "HTML 태그 이름을 그대로 씁니다. 해당 태그 모두에 스타일이 적용됩니다.",
+        code: `/* 모든 <p> 태그의 글자색을 파랑으로 */\np {\n  color: blue;\n}\n\n/* 모든 <h1> 태그의 글자 크기 변경 */\nh1 {\n  font-size: 32px;\n}`,
+        codeLines: [
+          { token: "p { }", explain: "HTML의 <p>...</p> 태그 전체에 적용" },
+          { token: "h1 { }", explain: "HTML의 <h1>...</h1> 태그 전체에 적용" },
+        ]
+      },
+      {
+        title: "🔵 ② 클래스 선택자 — 점(.) 을 앞에",
+        text: "점(.)을 앞에 붙입니다. HTML에서 class=\"이름\" 으로 지정한 요소에 적용됩니다. 같은 클래스를 여러 요소에 반복해서 쓸 수 있어요!",
+        code: `/* HTML에서: <div class="box">내용</div> */\n\n.box {\n  background: yellow;  /* 배경색 노랑 */\n  padding: 10px;       /* 안쪽 여백 10px */\n  border-radius: 8px;  /* 모서리 둥글게 */\n}`,
+        codeLines: [
+          { token: ".box", explain: "점(.) + 클래스이름 → HTML의 class=\"box\" 가진 요소 모두" },
+          { token: "background: yellow;", explain: "배경색을 노란색으로" },
+          { token: "padding: 10px;", explain: "내용과 테두리 사이 여백을 10px로" },
+        ]
+      },
+      {
+        title: "🔴 ③ ID 선택자 — 샵(#) 을 앞에",
+        text: "샵(#)을 앞에 붙입니다. 페이지에서 딱 하나의 고유한 요소에 사용합니다. (ID는 중복 사용하면 안 됩니다!)",
+        code: `/* HTML에서: <h1 id="title">제목</h1> */\n\n#title {\n  color: navy;        /* 글자색 남색 */\n  font-weight: bold;  /* 굵게 */\n  font-size: 2rem;    /* 글자 크기 2배 */\n}`,
+        codeLines: [
+          { token: "#title", explain: "샵(#) + id이름 → HTML의 id=\"title\" 가진 요소 (페이지에 1개만!)" },
+          { token: "font-weight: bold;", explain: "글자를 굵게 (bold) 표시" },
+          { token: "font-size: 2rem;", explain: "rem은 기본 글자 크기의 배수 — 2rem = 기본의 2배" },
+        ]
+      },
+      {
+        title: "🔗 ④ 자손 선택자 — 공백 으로 '안에 있는'",
+        text: "두 선택자 사이에 공백(스페이스)을 넣으면 '첫 번째 요소 안에 있는 두 번째 요소'를 선택합니다.",
+        code: `/* .box 안에 있는 <p> 에만 적용 */\n.box p {\n  color: green;\n  font-weight: bold;\n}\n\n/* nav 안에 있는 모든 <a> 에만 적용 */\nnav a {\n  text-decoration: none;  /* 밑줄 제거 */\n  color: white;\n}`,
+        codeLines: [
+          { token: ".box p", explain: ".box 클래스 요소 안에 있는 <p> 만 선택 (바깥의 p는 영향 없음!)" },
+          { token: "text-decoration: none;", explain: "링크의 밑줄을 없앰" },
+        ]
+      },
+    ],
     theory: [
       { label: "태그 선택자", code: "p { }", desc: "모든 <p> 요소에 스타일 적용" },
       { label: "클래스 선택자", code: ".box { }", desc: "class=\"box\" 요소에 스타일 적용" },
@@ -40,9 +97,67 @@ const lessons = [
     hint: `#title {\n  color: #3b82f6;\n  font-size: 2rem;\n}\n\np {\n  color: #4b5563;\n  line-height: 1.6;\n}\n\n.box {\n  background: #f0fdf4;\n  border: 2px solid #86efac;\n  padding: 16px;\n  border-radius: 8px;\n}\n\n.box p {\n  color: #15803d;\n  font-weight: bold;\n}`,
     challenge: "#title를 파란색으로, .box에 초록색 테두리와 배경을 적용해보세요!",
   },
+
+  // ─────────────────────────────────────────────────────────
+  // 레슨 2: 박스 모델
+  // ─────────────────────────────────────────────────────────
   {
     id: 2, category: "기초", title: "박스 모델 (Box Model)", emoji: "📦",
     description: "모든 HTML 요소는 박스로 구성됩니다. margin, border, padding, content를 이해하면 레이아웃의 기본을 익힐 수 있습니다.",
+    conceptDetail: [
+      {
+        title: "🌟 모든 요소는 사각형 박스입니다!",
+        text: "HTML의 모든 요소(div, p, h1, span 등)는 눈에 보이지 않는 사각형 박스로 이루어져 있어요. 이 박스는 안쪽부터 4개의 층으로 나뉩니다: content(내용) → padding(안쪽 여백) → border(테두리) → margin(바깥 여백)",
+      },
+      {
+        title: "📄 ① content — 내용이 담기는 영역",
+        text: "실제 글, 이미지, 버튼 등이 들어가는 영역입니다. width와 height로 크기를 조절합니다.",
+        code: `.box {\n  width: 200px;    /* 가로 너비 200픽셀 */\n  height: 100px;   /* 세로 높이 100픽셀 */\n  background: skyblue;  /* 배경색 하늘색 */\n}`,
+        codeLines: [
+          { token: "width: 200px;", explain: "콘텐츠 영역의 가로 크기를 200픽셀로 설정" },
+          { token: "height: 100px;", explain: "콘텐츠 영역의 세로 크기를 100픽셀로 설정" },
+          { token: "px", explain: "픽셀(pixel) — 화면의 점 단위. 1px = 화면의 아주 작은 점 1개" },
+        ]
+      },
+      {
+        title: "🔲 ② padding — 콘텐츠와 테두리 사이 안쪽 여백",
+        text: "내용물과 테두리 사이의 빈 공간입니다. 배경색이 padding 영역에도 적용됩니다.",
+        code: `.box {\n  padding: 20px;               /* 상하좌우 모두 20px */\n  padding: 10px 20px;          /* 위아래 10px, 좌우 20px */\n  padding: 5px 10px 15px 20px; /* 위 오른쪽 아래 왼쪽 (시계방향) */\n  padding-top: 10px;           /* 위쪽만 */\n  padding-left: 15px;          /* 왼쪽만 */\n}`,
+        codeLines: [
+          { token: "padding: 20px;", explain: "위·아래·왼쪽·오른쪽 모두 20px (값 1개 = 4방향 동일)" },
+          { token: "padding: 10px 20px;", explain: "값 2개: 첫 번째=위아래, 두 번째=좌우" },
+          { token: "padding: 5px 10px 15px 20px;", explain: "값 4개: 위→오→아→왼 (시계방향 순서)" },
+        ]
+      },
+      {
+        title: "🖼️ ③ border — 테두리 선",
+        text: "요소를 감싸는 선입니다. 두께·선종류·색상 세 가지를 공백으로 구분해 작성합니다.",
+        code: `.box {\n  border: 2px solid #333;\n  /*     두께  선종류  색상  */\n}\n\n/* 선종류 옵션 */\nborder: 2px solid red;    /* 실선 ────── */\nborder: 2px dashed blue;  /* 끊어진선 - - - */\nborder: 2px dotted gray;  /* 점선 ........  */\n\n/* 모서리 둥글게 */\nborder-radius: 10px;  /* 약간 둥글게 */\nborder-radius: 50%;   /* 완전한 원형 */`,
+        codeLines: [
+          { token: "2px", explain: "테두리 두께 (숫자가 클수록 두꺼워짐)" },
+          { token: "solid", explain: "선 종류: solid(실선) / dashed(대시) / dotted(점점)" },
+          { token: "#333", explain: "테두리 색상 (HEX 코드, 이름, rgb 모두 가능)" },
+          { token: "border-radius: 50%;", explain: "모서리를 50% 둥글게 → 정사각형이면 원이 됨!" },
+        ]
+      },
+      {
+        title: "📏 ④ margin — 요소 바깥쪽 여백",
+        text: "다른 요소와의 거리입니다. margin: auto 를 좌우에 쓰면 수평 가운데 정렬이 됩니다!",
+        code: `.box {\n  margin: 20px;           /* 상하좌우 모두 20px */\n  margin: 10px 20px;      /* 위아래 10px, 좌우 20px */\n  margin: 0 auto;         /* 위아래 0, 좌우 자동 → 가운데 정렬! */\n  margin-bottom: 16px;    /* 아래쪽만 16px */\n}`,
+        codeLines: [
+          { token: "margin: 0 auto;", explain: "auto = 남은 공간을 자동으로 반반 → 좌우 가운데 정렬!" },
+          { token: "margin-bottom: 16px;", explain: "요소 아래쪽에만 16px 여백 (섹션 사이 간격에 자주 사용)" },
+        ]
+      },
+      {
+        title: "💡 꿀팁: box-sizing: border-box",
+        text: "기본 설정에서 width는 content 크기만입니다. border-box로 바꾸면 padding+border를 포함한 크기가 width가 됩니다. 크기 계산이 훨씬 직관적이라 실무에서 거의 항상 사용해요!",
+        code: `/* 기본(content-box): width=200px + padding 20px씩\n   → 실제 화면에서 200+40 = 240px 차지 */\n\n/* border-box: width=200px이면\n   padding, border 포함해도 총 200px 유지! */\n.box {\n  box-sizing: border-box;\n  width: 200px;\n  padding: 20px; /* 넣어도 총 너비 200px 유지 */\n}`,
+        codeLines: [
+          { token: "box-sizing: border-box;", explain: "이 한 줄로 width가 '전체 크기'가 됨 — 직관적 크기 계산 가능" },
+        ]
+      },
+    ],
     theory: [
       { label: "content", code: "width / height", desc: "실제 콘텐츠 영역" },
       { label: "padding", code: "padding: 10px", desc: "콘텐츠와 테두리 사이 안쪽 여백" },
@@ -54,9 +169,61 @@ const lessons = [
     hint: `.outer {\n  background: #e0f2fe;\n  padding: 30px;\n}\n\n.inner {\n  background: #0ea5e9;\n  color: white;\n  width: 200px;\n  height: 80px;\n  padding: 20px;\n  margin: 15px auto;\n  border: 4px solid #0369a1;\n  border-radius: 12px;\n  text-align: center;\n  box-sizing: border-box;\n}\n\n.card {\n  background: #fef9c3;\n  border: 2px dashed #ca8a04;\n  padding: 20px;\n  margin: 12px;\n  width: 200px;\n  border-radius: 8px;\n}`,
     challenge: ".inner를 가운데 정렬하고, border-radius로 둥근 모서리를 만들어보세요!",
   },
+
+  // ─────────────────────────────────────────────────────────
+  // 레슨 3: 색상과 배경
+  // ─────────────────────────────────────────────────────────
   {
     id: 3, category: "기초", title: "색상과 배경 (Color & Background)", emoji: "🎨",
     description: "CSS에서 색상은 이름, HEX, RGB, HSL 등 다양한 방식으로 지정할 수 있습니다.",
+    conceptDetail: [
+      {
+        title: "🌟 색상 관련 CSS 속성 두 가지",
+        text: "색상을 설정하는 속성은 크게 두 가지입니다. color는 글자 색상, background(또는 background-color)는 배경 색상입니다.",
+        code: `.box {\n  color: red;              /* 글자(텍스트) 색상 */\n  background-color: yellow; /* 배경 색상 */\n  background: yellow;       /* 배경 색상 (위와 같음, 더 많이 사용) */\n}`,
+        codeLines: [
+          { token: "color:", explain: "텍스트(글자)의 색상을 바꿉니다" },
+          { token: "background-color:", explain: "배경 색상만 설정 (background의 하위 속성)" },
+          { token: "background:", explain: "배경 전체 설정 — 색상, 이미지, 그라디언트 모두 가능" },
+        ]
+      },
+      {
+        title: "🏷️ ① 색상 이름으로 지정",
+        text: "CSS에는 미리 정해진 140여 가지 색상 이름이 있습니다. 간단하지만 원하는 색을 정밀하게 표현하기 어렵습니다.",
+        code: `color: red;      /* 빨강 */\ncolor: blue;     /* 파랑 */\ncolor: green;    /* 초록 */\ncolor: white;    /* 흰색 */\ncolor: black;    /* 검정 */\ncolor: gray;     /* 회색 */\ncolor: orange;   /* 주황 */\ncolor: purple;   /* 보라 */\ncolor: tomato;   /* 토마토색 (붉은 주황) */`,
+      },
+      {
+        title: "🔢 ② HEX 코드 — 가장 많이 쓰는 방식",
+        text: "# 뒤에 16진수 6자리로 색상을 표현합니다. #RRGGBB 형식으로 빨강·초록·파랑 각 0~255를 16진수로 씁니다. 디자이너가 HEX 코드를 알려주면 그대로 붙여 넣으면 됩니다!",
+        code: `color: #ff0000;   /* 빨강  (ff=255적색, 00=0초록, 00=0파랑) */\ncolor: #0000ff;   /* 파랑  (00적색, 00초록, ff=255파랑) */\ncolor: #000000;   /* 검정  (모두 0) */\ncolor: #ffffff;   /* 흰색  (모두 ff=255) */\ncolor: #3b82f6;   /* 파란계열 (실무에서 많이 쓰는 색) */\ncolor: #ef4444;   /* 빨간계열 */\ncolor: #22c55e;   /* 초록계열 */`,
+        codeLines: [
+          { token: "#ff0000", explain: "ff(빨강 MAX), 00(초록 없음), 00(파랑 없음) → 순수 빨강" },
+          { token: "#3b82f6", explain: "실제 프로젝트에서 쓰는 예쁜 파란색 — 외울 필요 없이 복사해서 사용!" },
+        ]
+      },
+      {
+        title: "🎚️ ③ RGB — 빨강·초록·파랑 직접 숫자로",
+        text: "rgb(빨강, 초록, 파랑) 형태로 각 색상을 0~255 숫자로 표현합니다. rgba()를 쓰면 투명도(0~1)도 설정할 수 있어요!",
+        code: `color: rgb(255, 0, 0);         /* 빨강 */\ncolor: rgb(0, 0, 255);         /* 파랑 */\ncolor: rgb(72, 199, 142);      /* 민트 초록 */\n\n/* rgba — 마지막 숫자가 투명도 (0=완전투명, 1=완전불투명) */\nbackground: rgba(59, 130, 246, 0.3);  /* 파란색 30% 투명 */\nbackground: rgba(0, 0, 0, 0.5);       /* 검정 반투명 (오버레이에 사용) */`,
+        codeLines: [
+          { token: "rgb(255, 0, 0)", explain: "빨강255, 초록0, 파랑0 → 순수 빨강" },
+          { token: "rgba(0,0,0, 0.5)", explain: "검정색 50% 투명 → 모달/오버레이 배경에 자주 사용" },
+        ]
+      },
+      {
+        title: "🌈 ④ 그라디언트 — 점점 변하는 배경색",
+        text: "linear-gradient()를 사용하면 두 가지 이상의 색이 부드럽게 이어지는 배경을 만들 수 있습니다.",
+        code: `/* linear-gradient(방향, 시작색, 끝색) */\nbackground: linear-gradient(to right, red, blue);\n/* 왼쪽(red)에서 오른쪽(blue)으로 */\n\nbackground: linear-gradient(to bottom, #667eea, #764ba2);\n/* 위에서 아래로 */\n\nbackground: linear-gradient(135deg, #f093fb, #f5576c);\n/* 135도 각도 대각선 방향 */\n\n/* 세 가지 색도 가능! */\nbackground: linear-gradient(to right, red, yellow, green);`,
+        codeLines: [
+          { token: "to right", explain: "그라디언트 방향: to right(→), to bottom(↓), to left(←), to top(↑)" },
+          { token: "135deg", explain: "각도로 방향 지정 — 0deg=위, 90deg=오른쪽, 135deg=오른쪽아래 대각선" },
+        ]
+      },
+      {
+        title: "💡 색상 찾기 팁",
+        text: "구글에서 'color picker'를 검색하면 원하는 색상의 HEX/RGB 코드를 바로 복사할 수 있습니다. 또는 coolors.co, colorhunt.co 같은 사이트에서 예쁜 색상 팔레트를 무료로 가져올 수 있어요!",
+      },
+    ],
     theory: [
       { label: "색상 이름", code: "color: red", desc: "CSS 내장 색상 이름 사용" },
       { label: "HEX 코드", code: "color: #ff6b6b", desc: "16진수 RGB 값" },
@@ -68,9 +235,63 @@ const lessons = [
     hint: `.hero {\n  background: linear-gradient(135deg, #f093fb, #f5576c);\n  color: white;\n  padding: 50px;\n  text-align: center;\n  border-radius: 16px;\n  margin-bottom: 16px;\n  box-shadow: 0 8px 32px rgba(240,147,251,0.4);\n}\n\n.palette {\n  display: flex;\n  gap: 12px;\n}\n\n.color-box {\n  flex: 1; height: 100px; border-radius: 12px;\n  display: flex; align-items: center; justify-content: center;\n  color: white; font-weight: bold;\n}\n\n#c1 { background: #ff6b6b; }\n#c2 { background: rgb(72, 199, 142); }\n#c3 { background: hsl(210, 80%, 55%); }`,
     challenge: "hero 섹션의 그라디언트 색상을 마음에 드는 색으로 바꿔보세요!",
   },
+
+  // ─────────────────────────────────────────────────────────
+  // 레슨 4: Flexbox
+  // ─────────────────────────────────────────────────────────
   {
     id: 4, category: "레이아웃", title: "Flexbox", emoji: "↔️",
     description: "Flexbox는 1차원 레이아웃을 만드는 강력한 도구입니다. 요소들을 가로/세로로 정렬하고 간격을 조절해보세요.",
+    conceptDetail: [
+      {
+        title: "🌟 Flexbox란?",
+        text: "Flexbox(플렉스박스)는 여러 요소를 한 줄(가로) 또는 한 열(세로)로 배치하고 정렬하는 CSS 레이아웃 방식입니다. 버튼 그룹, 네비게이션, 카드 목록 등 거의 모든 곳에서 사용합니다!",
+      },
+      {
+        title: "📦 display: flex — 시작하기",
+        text: "부모 요소(컨테이너)에 display: flex를 쓰면, 그 안의 자식 요소들이 자동으로 가로로 나란히 배치됩니다.",
+        code: `/* 부모(컨테이너) */\n.container {\n  display: flex;  /* 이 한 줄로 자식들이 가로 정렬! */\n  background: #f0f9ff;\n  padding: 16px;\n}\n\n/* 자식(아이템) — 특별한 설정 없어도 자동 가로 배치 */\n.item {\n  background: #3b82f6;\n  color: white;\n  padding: 10px 20px;\n  border-radius: 8px;\n}`,
+        codeLines: [
+          { token: "display: flex;", explain: "이 속성을 가진 요소가 '플렉스 컨테이너'가 됨 → 자식들이 플렉스 아이템" },
+        ]
+      },
+      {
+        title: "↕️ flex-direction — 배치 방향",
+        text: "자식 요소들을 가로(row)로 배치할지, 세로(column)로 배치할지 결정합니다.",
+        code: `.container {\n  display: flex;\n  flex-direction: row;     /* 기본값: 가로 배치 → → → */\n  flex-direction: column;  /* 세로 배치 ↓↓↓ */\n}`,
+        codeLines: [
+          { token: "flex-direction: row;", explain: "기본값 — 왼쪽에서 오른쪽으로 가로 배치" },
+          { token: "flex-direction: column;", explain: "위에서 아래로 세로 배치 (모바일 레이아웃에 많이 사용)" },
+        ]
+      },
+      {
+        title: "↔️ justify-content — 주축(가로) 정렬",
+        text: "flex-direction이 row일 때, 자식 요소들을 가로 방향으로 어떻게 정렬할지 설정합니다.",
+        code: `.container {\n  display: flex;\n  justify-content: flex-start;    /* |아이템들      | (기본, 왼쪽) */\n  justify-content: flex-end;      /* |      아이템들| (오른쪽) */\n  justify-content: center;        /* |  아이템들  | (가운데) */\n  justify-content: space-between; /* |아│이│템│들| (양끝 맞춤, 사이 균등) */\n  justify-content: space-around;  /* | 아 이 템 들 | (각 아이템 주변 균등) */\n  justify-content: space-evenly;  /* | 아 이 템 들 | (모든 간격 동일) */\n}`,
+        codeLines: [
+          { token: "space-between", explain: "첫·마지막은 양끝에, 나머지 사이 간격 균등 → 네비게이션에 자주 사용!" },
+          { token: "center", explain: "모든 아이템을 정중앙에 배치 → 버튼 그룹, 로고 중앙 정렬에 사용" },
+        ]
+      },
+      {
+        title: "↕️ align-items — 교차축(세로) 정렬",
+        text: "flex-direction이 row일 때, 자식 요소들을 세로 방향으로 어떻게 정렬할지 설정합니다.",
+        code: `.container {\n  display: flex;\n  height: 100px;           /* 높이가 있어야 효과 보임 */\n  align-items: stretch;    /* 기본: 컨테이너 높이만큼 늘어남 */\n  align-items: flex-start; /* 위쪽 정렬 */\n  align-items: flex-end;   /* 아래쪽 정렬 */\n  align-items: center;     /* 세로 가운데 정렬 ← 자주 사용! */\n}`,
+        codeLines: [
+          { token: "align-items: center;", explain: "세로 가운데 정렬 → justify-content: center와 함께 쓰면 완전 중앙!" },
+        ]
+      },
+      {
+        title: "🔄 flex-wrap과 gap — 줄바꿈과 간격",
+        text: "아이템이 많아서 한 줄에 안 들어올 때 flex-wrap으로 자동 줄바꿈, gap으로 간격을 설정합니다.",
+        code: `.container {\n  display: flex;\n  flex-wrap: wrap;   /* 넘치면 아래 줄로 자동 이동 */\n  gap: 16px;         /* 아이템 사이 간격 (가로+세로 모두) */\n  gap: 10px 20px;    /* 세로간격 10px, 가로간격 20px */\n}\n\n/* 아이템이 flex 컨테이너 안에서 차지할 비율 */\n.item {\n  flex: 1;           /* 남은 공간을 균등하게 나눔 */\n  min-width: 100px;  /* 최소 너비 — 너무 작아지지 않게 */\n}`,
+        codeLines: [
+          { token: "flex-wrap: wrap;", explain: "아이템이 가득 차면 다음 줄로 자동으로 내려감" },
+          { token: "gap: 16px;", explain: "아이템들 사이 간격 16px — margin보다 편하게 간격 설정 가능" },
+          { token: "flex: 1;", explain: "남은 공간을 이 아이템들이 균등하게 나눠가짐" },
+        ]
+      },
+    ],
     theory: [
       { label: "flex 컨테이너", code: "display: flex", desc: "자식 요소들이 flex 아이템이 됨" },
       { label: "방향", code: "flex-direction: row | column", desc: "가로(row) 또는 세로(column) 배치" },
@@ -82,9 +303,64 @@ const lessons = [
     hint: `.navbar {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  background: linear-gradient(90deg, #1e293b, #334155);\n  color: white;\n  padding: 16px 28px;\n  border-radius: 12px;\n  margin-bottom: 20px;\n}\n.logo { font-weight: bold; font-size: 1.3rem; }\n.nav-links { display: flex; gap: 24px; }\n.nav-links a { color: #94a3b8; text-decoration: none; }\n\n.gallery {\n  display: flex; flex-wrap: wrap;\n  gap: 16px; justify-content: center;\n}\n.card {\n  background: linear-gradient(135deg, #f0f9ff, #e0f2fe);\n  border: 2px solid #bae6fd;\n  border-radius: 16px;\n  padding: 28px; flex: 1;\n  min-width: 100px; text-align: center; font-size: 1.2rem;\n}`,
     challenge: "gallery의 justify-content를 center로 바꾸고, 카드에 그라디언트 배경을 적용해보세요!",
   },
+
+  // ─────────────────────────────────────────────────────────
+  // 레슨 5: CSS Grid
+  // ─────────────────────────────────────────────────────────
   {
     id: 5, category: "레이아웃", title: "CSS Grid", emoji: "🗂️",
     description: "Grid는 2차원 레이아웃(행과 열)을 만드는 강력한 도구입니다. 복잡한 페이지 구조를 쉽게 만들 수 있습니다.",
+    conceptDetail: [
+      {
+        title: "🌟 Grid vs Flexbox — 언제 뭘 쓸까?",
+        text: "Flexbox는 1차원(가로 OR 세로 중 하나)에 특화되어 있고, Grid는 2차원(가로 + 세로 동시)에 특화되어 있습니다. 카드 목록처럼 한 방향 정렬은 Flexbox, 신문 레이아웃처럼 행과 열을 동시에 제어할 때는 Grid를 사용합니다.",
+      },
+      {
+        title: "🔲 display: grid — 시작하기",
+        text: "부모 요소에 display: grid를 쓰면 그리드 컨테이너가 됩니다.",
+        code: `.container {\n  display: grid;\n  /* 이것만 써도 그리드 활성화!\n     하지만 열 정의를 해야 실제 배치가 됩니다 */\n}`,
+        codeLines: [
+          { token: "display: grid;", explain: "이 요소가 '그리드 컨테이너'가 됨 — 자식들이 그리드 아이템이 됨" },
+        ]
+      },
+      {
+        title: "📐 grid-template-columns — 열 구조 정의",
+        text: "몇 개의 열을 어떤 너비로 만들지 설정합니다. 가장 핵심적인 속성입니다!",
+        code: `.container {\n  display: grid;\n\n  /* 고정 px 값 */\n  grid-template-columns: 200px 200px 200px; /* 3열, 각 200px */\n\n  /* fr 단위 (fraction, 비율) */\n  grid-template-columns: 1fr 1fr 1fr;   /* 3열, 동일 너비 */\n  grid-template-columns: 1fr 2fr 1fr;   /* 3열, 비율 1:2:1 */\n\n  /* repeat() 함수 — 반복 */\n  grid-template-columns: repeat(3, 1fr);   /* 3열 동일 너비 */\n  grid-template-columns: repeat(4, 1fr);   /* 4열 동일 너비 */\n\n  /* 혼합 */\n  grid-template-columns: 200px 1fr;   /* 사이드바(고정) + 본문(나머지) */\n}`,
+        codeLines: [
+          { token: "1fr", explain: "fr = fraction(분수) — 남은 공간을 비율로 나눔. 1fr 1fr = 50%씩!" },
+          { token: "repeat(3, 1fr)", explain: "1fr을 3번 반복 = 1fr 1fr 1fr 와 동일. 더 간결하게 작성 가능" },
+          { token: "200px 1fr", explain: "왼쪽 200px 고정 + 오른쪽은 나머지 전체 → 사이드바+본문 레이아웃" },
+        ]
+      },
+      {
+        title: "📏 grid-template-rows — 행 높이 정의",
+        text: "열처럼 행의 높이도 설정할 수 있습니다.",
+        code: `.container {\n  display: grid;\n  grid-template-columns: repeat(3, 1fr);\n  grid-template-rows: 60px 1fr 40px;  /* 헤더 본문 푸터 높이 */\n  gap: 16px;  /* 행과 열 사이 간격 */\n  min-height: 300px;\n}`,
+        codeLines: [
+          { token: "grid-template-rows:", explain: "행의 높이를 순서대로 지정 (선택적 — 생략하면 내용에 맞게 자동)" },
+          { token: "gap: 16px;", explain: "그리드 아이템 사이의 간격 (행간격 + 열간격 동시 설정)" },
+        ]
+      },
+      {
+        title: "📌 grid-column — 열 방향으로 칸 차지하기",
+        text: "특정 아이템이 몇 개의 열을 차지할지 설정합니다.",
+        code: `.item {\n  /* span: ~개 차지하기 */\n  grid-column: span 2;   /* 열 2개 차지 */\n  grid-column: span 3;   /* 열 3개 차지 */\n\n  /* 시작/끝 라인 직접 지정 */\n  grid-column: 1 / 3;    /* 1번선 ~ 3번선 (열 2개 차지) */\n  grid-column: 1 / -1;   /* 1번선 ~ 마지막선 (전체 너비!) */\n\n  /* 행 방향도 동일하게 */\n  grid-row: span 2;      /* 행 2개 차지 */\n}`,
+        codeLines: [
+          { token: "grid-column: 1 / -1;", explain: "-1은 '마지막 선'을 의미 → 전체 너비 차지! 헤더/푸터에 자주 사용" },
+          { token: "grid-column: span 2;", explain: "현재 위치에서 2칸을 차지 — 강조 카드, 주요 기사에 활용" },
+        ]
+      },
+      {
+        title: "💡 Grid 레이아웃 예시 — 신문 레이아웃",
+        text: "헤더·사이드바·본문·푸터로 구성된 전형적인 웹 레이아웃을 Grid로 만들 수 있습니다.",
+        code: `.page {\n  display: grid;\n  grid-template-columns: 200px 1fr; /* 사이드바 + 본문 */\n  gap: 16px;\n}\n\n/* 헤더: 전체 너비 */\n.header { grid-column: 1 / -1; }\n\n/* 푸터: 전체 너비 */\n.footer { grid-column: 1 / -1; }\n\n/* 사이드바, 본문은 자동 배치 */`,
+        codeLines: [
+          { token: "grid-template-columns: 200px 1fr;", explain: "왼쪽 200px(사이드바) + 나머지(본문) → 2열 구조" },
+          { token: "grid-column: 1 / -1;", explain: "1번 열선부터 마지막 열선까지 = 전체 너비 → 헤더/푸터" },
+        ]
+      },
+    ],
     theory: [
       { label: "그리드 컨테이너", code: "display: grid", desc: "그리드 레이아웃 활성화" },
       { label: "열 정의", code: "grid-template-columns: 1fr 1fr 1fr", desc: "3개의 동일한 너비 열 생성" },
@@ -96,9 +372,67 @@ const lessons = [
     hint: `.page-layout {\n  display: grid;\n  grid-template-columns: 200px 1fr;\n  gap: 16px; min-height: 340px;\n}\n.header {\n  grid-column: 1 / -1;\n  background: linear-gradient(90deg, #3b82f6, #8b5cf6);\n  color: white; padding: 20px; border-radius: 12px;\n  text-align: center; font-weight: bold; font-size: 1.2rem;\n}\n.sidebar { background: #f1f5f9; padding: 20px; border-radius: 12px; border-left: 4px solid #3b82f6; }\n.main { background: white; padding: 20px; border-radius: 12px; border: 1px solid #e2e8f0; }\n.article-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; }\n.article { background: #f8fafc; border: 1px solid #e2e8f0; padding: 20px; border-radius: 10px; text-align: center; }\n.featured { grid-column: span 3; background: linear-gradient(135deg,#fef3c7,#fde68a); border-color: #f59e0b; font-weight: bold; }\n.footer { grid-column: 1 / -1; background: #1e293b; color: #94a3b8; padding: 16px; border-radius: 12px; text-align: center; }`,
     challenge: "헤더에 그라디언트를 추가하고, .featured 기사를 더 돋보이게 꾸며보세요!",
   },
+
+  // ─────────────────────────────────────────────────────────
+  // 레슨 6: 전환 & 애니메이션
+  // ─────────────────────────────────────────────────────────
   {
     id: 6, category: "고급", title: "전환 & 애니메이션", emoji: "✨",
     description: "transition과 animation을 활용해 요소에 부드러운 움직임과 생동감을 더해봅시다.",
+    conceptDetail: [
+      {
+        title: "🌟 정적인 웹을 동적으로 만들기",
+        text: "CSS의 transition과 animation을 사용하면 JavaScript 없이도 부드러운 움직임 효과를 줄 수 있습니다. transition은 '상태 변화'를 부드럽게, animation은 '독립적인 움직임'을 만듭니다.",
+      },
+      {
+        title: "⚡ transition — 상태 변화를 부드럽게",
+        text: "마우스를 올리거나(:hover), 클릭할 때(:active) 등 상태가 바뀔 때 즉각 변하는 것이 아니라 부드럽게 전환되도록 합니다.",
+        code: `.button {\n  background: blue;\n  color: white;\n  padding: 10px 20px;\n\n  /* transition: 속성 지속시간 타이밍함수; */\n  transition: background 0.3s ease;\n  /* 이렇게 하면 background 색이 0.3초에 걸쳐 변함 */\n}\n\n.button:hover {\n  background: darkblue; /* 마우스 올리면 이 색으로 부드럽게 전환 */\n}`,
+        codeLines: [
+          { token: "transition:", explain: "어떤 속성을, 얼마 동안, 어떤 방식으로 전환할지 설정" },
+          { token: "0.3s", explain: "0.3초 동안 전환 (숫자가 클수록 느려짐 — 0.5s, 1s 등)" },
+          { token: "ease", explain: "타이밍 함수: ease(천천히 시작→빠름→천천히 끝) / linear(일정) / ease-in / ease-out" },
+        ]
+      },
+      {
+        title: "🎛️ transition — 여러 속성 한번에",
+        text: "transition: all을 쓰면 변화하는 모든 속성에 전환 효과가 적용됩니다. 실무에서 가장 많이 쓰는 패턴입니다!",
+        code: `.card {\n  background: white;\n  transform: translateY(0);\n  box-shadow: 0 2px 8px rgba(0,0,0,0.1);\n\n  transition: all 0.3s ease; /* 모든 변화에 0.3s 전환 */\n}\n\n.card:hover {\n  background: #f0f9ff;\n  transform: translateY(-8px); /* 위로 8px 올라가는 효과 */\n  box-shadow: 0 12px 32px rgba(0,0,0,0.2);\n  /* 세 가지가 모두 부드럽게 전환됨! */\n}`,
+        codeLines: [
+          { token: "transition: all 0.3s ease;", explain: "all = 변화하는 모든 CSS 속성에 전환 효과 적용" },
+          { token: "transform: translateY(-8px);", explain: "Y축(세로)으로 -8px 이동 = 위로 8px 올라감" },
+        ]
+      },
+      {
+        title: "🎬 @keyframes — 애니메이션 경로 정의",
+        text: "@keyframes는 애니메이션이 어떻게 변할지 단계별 경로를 정의합니다. from/to 또는 0%/50%/100% 형태로 씁니다.",
+        code: `/* 이름: fadeIn */\n@keyframes fadeIn {\n  from { opacity: 0; }   /* 시작: 투명 */\n  to   { opacity: 1; }   /* 끝: 완전 보임 */\n}\n\n/* 여러 단계 */\n@keyframes bounce {\n  0%   { transform: translateY(0); }    /* 시작 위치 */\n  50%  { transform: translateY(-20px); } /* 위로 올라감 */\n  100% { transform: translateY(0); }    /* 다시 시작 위치 */\n}\n\n@keyframes spin {\n  from { transform: rotate(0deg); }   /* 0도 */\n  to   { transform: rotate(360deg); } /* 360도 (한 바퀴) */\n}`,
+        codeLines: [
+          { token: "@keyframes fadeIn", explain: "fadeIn이라는 이름의 애니메이션 정의 — 이 이름을 animation 속성에서 사용" },
+          { token: "from / to", explain: "from=시작(0%), to=끝(100%) — 간단한 2단계 애니메이션에 사용" },
+          { token: "0% / 50% / 100%", explain: "퍼센트로 세밀한 중간 단계 설정 가능" },
+        ]
+      },
+      {
+        title: "▶️ animation — 애니메이션 적용하기",
+        text: "@keyframes로 정의한 애니메이션을 실제 요소에 적용합니다.",
+        code: `.box {\n  /* animation: 이름 지속시간 타이밍 반복횟수 */\n  animation: bounce 1s ease-in-out infinite;\n  /*         이름   시간  타이밍     무한반복 */\n}\n\n/* 여러 옵션 */\nanimation: fadeIn 0.5s ease 1;         /* 1번만 실행 */\nanimation: spin 2s linear infinite;    /* 2초마다 무한회전 */\nanimation: pulse 1.5s ease-in-out infinite alternate;\n/* alternate: 정방향→역방향 번갈아가며 */`,
+        codeLines: [
+          { token: "infinite", explain: "무한 반복 (숫자를 쓰면 그 횟수만큼 — 예: 3)" },
+          { token: "linear", explain: "일정한 속도로 (회전 애니메이션에 적합)" },
+          { token: "alternate", explain: "정방향→역방향→정방향 번갈아가며 재생" },
+        ]
+      },
+      {
+        title: "🔄 transform — 변형 효과",
+        text: "transform은 요소를 이동, 회전, 크기 변경 등 다양한 변형을 줍니다. transition, animation과 함께 자주 사용합니다.",
+        code: `.box {\n  transform: translateX(20px);     /* X축(가로)으로 20px 이동 */\n  transform: translateY(-10px);    /* Y축(세로)으로 -10px(위로) 이동 */\n  transform: scale(1.2);           /* 1.2배 크기로 확대 */\n  transform: scale(0.9);           /* 0.9배로 축소 */\n  transform: rotate(45deg);        /* 45도 시계방향 회전 */\n  transform: rotate(-90deg);       /* 90도 반시계방향 회전 */\n\n  /* 여러 변형을 함께 */\n  transform: translateY(-5px) scale(1.05); /* 올리면서 확대 */\n}`,
+        codeLines: [
+          { token: "translateY(-8px)", explain: "위쪽으로 8px 이동 (음수=위, 양수=아래) — 호버 시 살짝 뜨는 효과에 많이 사용!" },
+          { token: "scale(1.1)", explain: "1.1배로 확대 (1보다 크면 확대, 작으면 축소) — 강조 효과에 활용" },
+        ]
+      },
+    ],
     theory: [
       { label: "transition", code: "transition: all 0.3s ease", desc: "속성 변화를 부드럽게 처리" },
       { label: "@keyframes", code: "@keyframes name { from {} to {} }", desc: "애니메이션 단계 정의" },
@@ -114,6 +448,51 @@ const lessons = [
 
 const PREVIEW_WRAPPER = (html, css) =>
   `<!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8"><style>*{box-sizing:border-box;margin:0;padding:0;}body{font-family:'Segoe UI',sans-serif;padding:16px;background:#fff;font-size:14px;line-height:1.5;}h3{margin-bottom:10px;color:#374151;font-size:0.9rem;}a{text-decoration:none;}button{font-family:inherit;}${css}</style></head><body>${html}</body></html>`;
+
+// ── 개념 상세 카드 렌더러 ──
+function ConceptCard({ item }) {
+  return (
+    <div style={{ marginBottom:"16px", background:"white", border:"1px solid #e2e8f0", borderRadius:"12px", overflow:"hidden" }}>
+      {/* 제목 */}
+      <div style={{ background:"linear-gradient(135deg,#eff6ff,#f0fdf4)", padding:"10px 14px", borderBottom:"1px solid #e2e8f0" }}>
+        <div style={{ fontWeight:"700", color:"#0f172a", fontSize:"0.85rem" }}>{item.title}</div>
+      </div>
+      {/* 설명 */}
+      <div style={{ padding:"10px 14px" }}>
+        <p style={{ fontSize:"0.8rem", color:"#334155", lineHeight:"1.7", marginBottom: item.code ? "10px" : "0" }}>
+          {item.text}
+        </p>
+        {/* 코드 블록 */}
+        {item.code && (
+          <div style={{ background:"#0f172a", borderRadius:"8px", overflow:"hidden" }}>
+            <div style={{ padding:"4px 12px", background:"#1e293b", borderBottom:"1px solid #334155", fontSize:"0.67rem", color:"#64748b", display:"flex", alignItems:"center", gap:"6px" }}>
+              <span style={{ color:"#ef4444" }}>●</span><span style={{ color:"#fbbf24" }}>●</span><span style={{ color:"#22c55e" }}>●</span>
+              <span style={{ marginLeft:"4px" }}>CSS 코드</span>
+            </div>
+            <pre style={{
+              margin:0, padding:"12px 14px",
+              fontFamily:"'Courier New', 'Monaco', monospace",
+              fontSize:"0.74rem", color:"#e2e8f0",
+              lineHeight:"1.7", overflowX:"auto",
+              whiteSpace:"pre-wrap", wordBreak:"break-all",
+            }}>{item.code}</pre>
+          </div>
+        )}
+        {/* 코드 줄별 설명 */}
+        {item.codeLines && item.codeLines.length > 0 && (
+          <div style={{ marginTop:"8px" }}>
+            {item.codeLines.map((cl, i) => (
+              <div key={i} style={{ display:"flex", gap:"8px", alignItems:"flex-start", marginBottom:"4px", fontSize:"0.75rem" }}>
+                <code style={{ background:"#dbeafe", color:"#1e40af", padding:"1px 6px", borderRadius:"4px", whiteSpace:"nowrap", flexShrink:0, fontSize:"0.72rem" }}>{cl.token}</code>
+                <span style={{ color:"#475569", lineHeight:"1.5" }}>→ {cl.explain}</span>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
 
 // ── 이름 입력 모달 ──
 function NameModal({ onConfirm }) {
@@ -158,7 +537,7 @@ function NameModal({ onConfirm }) {
   );
 }
 
-// ── 제출 완료 토스트 ──
+// ── 토스트 알림 ──
 function Toast({ msg, type }) {
   return (
     <div style={{
@@ -259,12 +638,9 @@ function App() {
   return (
     <div style={{ display:"flex", height:"100vh", fontFamily:"'Segoe UI',sans-serif", background:"#f8fafc", overflow:"hidden", position:"relative" }}>
 
-      {/* 이름 모달 */}
       {showNameModal && (
         <NameModal onConfirm={name => { setStudentName(name); setShowNameModal(false); }} />
       )}
-
-      {/* 토스트 알림 */}
       {toast && <Toast msg={toast.msg} type={toast.type} />}
 
       {/* ── 사이드바 ── */}
@@ -308,7 +684,6 @@ function App() {
             </div>
           ))}
 
-          {/* 전체 제출 버튼 */}
           <div style={{ padding:"16px", marginTop:"auto", borderTop:"1px solid #334155" }}>
             <button
               onClick={handleSubmit}
@@ -403,21 +778,38 @@ function App() {
                 </div>
               </div>
             ) : (
-              <div style={{ flex:1, overflowY:"auto", padding:"16px" }}>
-                <p style={{ fontSize:"0.83rem", color:"#475569", marginBottom:"14px", lineHeight:"1.6" }}>{lesson.description}</p>
-                <div style={{ fontWeight:"600", color:"#0f172a", marginBottom:"10px", fontSize:"0.86rem" }}>핵심 속성</div>
-                {lesson.theory.map((t, i) => (
-                  <div key={i} style={{ background:"#f8fafc", border:"1px solid #e2e8f0", borderRadius:"10px", padding:"10px 14px", marginBottom:"8px" }}>
-                    <div style={{ display:"flex", alignItems:"center", gap:"8px", marginBottom:"4px", flexWrap:"wrap" }}>
-                      <span style={{ background:"#dbeafe", color:"#1d4ed8", padding:"2px 7px", borderRadius:"4px", fontSize:"0.7rem", fontWeight:"600" }}>{t.label}</span>
-                      <code style={{ background:"#1e293b", color:"#7dd3fc", padding:"2px 7px", borderRadius:"4px", fontSize:"0.75rem" }}>{t.code}</code>
-                    </div>
-                    <div style={{ fontSize:"0.77rem", color:"#64748b" }}>{t.desc}</div>
-                  </div>
+              /* ── 개념 정리 탭 ── */
+              <div style={{ flex:1, overflowY:"auto", padding:"14px", background:"#f8fafc" }}>
+
+                {/* 상단 미션 배너 */}
+                <div style={{ background:"linear-gradient(135deg,#eff6ff,#f0fdf4)", border:"1px solid #bfdbfe", borderRadius:"10px", padding:"10px 14px", marginBottom:"14px", fontSize:"0.78rem", color:"#1d4ed8" }}>
+                  🎯 <strong>이번 미션:</strong> {lesson.challenge}
+                </div>
+
+                {/* 개념 상세 카드들 */}
+                {lesson.conceptDetail && lesson.conceptDetail.map((item, i) => (
+                  <ConceptCard key={i} item={item} />
                 ))}
-                <div style={{ marginTop:"16px", background:"#fefce8", border:"1px solid #fde047", borderRadius:"10px", padding:"12px" }}>
-                  <div style={{ fontWeight:"600", color:"#713f12", marginBottom:"6px", fontSize:"0.82rem" }}>💡 HTML 구조</div>
-                  <pre style={{ fontFamily:"monospace", fontSize:"0.72rem", color:"#44403c", overflowX:"auto", whiteSpace:"pre-wrap", wordBreak:"break-all" }}>{lesson.html}</pre>
+
+                {/* 핵심 속성 요약 */}
+                <div style={{ marginTop:"4px", marginBottom:"12px" }}>
+                  <div style={{ fontWeight:"700", color:"#0f172a", marginBottom:"8px", fontSize:"0.82rem", display:"flex", alignItems:"center", gap:"6px" }}>
+                    <span style={{ background:"#3b82f6", color:"white", borderRadius:"4px", padding:"2px 6px", fontSize:"0.68rem" }}>요약</span>
+                    핵심 속성 한눈에 보기
+                  </div>
+                  {lesson.theory.map((t, i) => (
+                    <div key={i} style={{ background:"white", border:"1px solid #e2e8f0", borderRadius:"8px", padding:"8px 12px", marginBottom:"6px", display:"flex", alignItems:"center", gap:"8px", flexWrap:"wrap" }}>
+                      <span style={{ background:"#dbeafe", color:"#1d4ed8", padding:"2px 7px", borderRadius:"4px", fontSize:"0.68rem", fontWeight:"600", whiteSpace:"nowrap" }}>{t.label}</span>
+                      <code style={{ background:"#1e293b", color:"#7dd3fc", padding:"2px 7px", borderRadius:"4px", fontSize:"0.72rem", whiteSpace:"nowrap" }}>{t.code}</code>
+                      <span style={{ fontSize:"0.74rem", color:"#64748b" }}>{t.desc}</span>
+                    </div>
+                  ))}
+                </div>
+
+                {/* HTML 구조 */}
+                <div style={{ background:"#fefce8", border:"1px solid #fde047", borderRadius:"10px", padding:"12px" }}>
+                  <div style={{ fontWeight:"600", color:"#713f12", marginBottom:"6px", fontSize:"0.8rem" }}>🏗️ 실습에 사용된 HTML 구조</div>
+                  <pre style={{ fontFamily:"monospace", fontSize:"0.71rem", color:"#44403c", overflowX:"auto", whiteSpace:"pre-wrap", wordBreak:"break-all", lineHeight:"1.6" }}>{lesson.html}</pre>
                 </div>
               </div>
             )}
