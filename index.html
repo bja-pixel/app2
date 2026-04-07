@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>🎓 CSS 마스터 - 인터랙티브 학습</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', sans-serif; background: #f8fafc; overflow: hidden; }
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: #475569; border-radius: 3px; }
+  textarea:focus { outline: none; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel">
+const { useState, useEffect, useRef } = React;
+
+// ✅ Google Apps Script 배포 URL을 여기에 붙여넣으세요
+const APPS_SCRIPT_URL = "YOUR_SCRIPT_URL_HERE";
+
+const lessons = [
+  {
+    id: 1, category: "기초", title: "선택자 (Selectors)", emoji: "🎯",
+    description: "CSS 선택자는 스타일을 적용할 HTML 요소를 지정합니다. 태그, 클래스, ID 선택자를 배워봅시다.",
+    theory: [
+      { label: "태그 선택자", code: "p { }", desc: "모든 <p> 요소에 스타일 적용" },
+      { label: "클래스 선택자", code: ".box { }", desc: "class=\"box\" 요소에 스타일 적용" },
+      { label: "ID 선택자", code: "#title { }", desc: "id=\"title\" 요소에 스타일 적용" },
+      { label: "자손 선택자", code: "div p { }", desc: "div 안의 모든 p 요소에 적용" },
+    ],
+    html: `<h1 id="title">제목입니다</h1>\n<p>일반 단락 텍스트입니다.</p>\n<div class="box">\n  <p>박스 안의 단락입니다.</p>\n</div>`,
+    initialCSS: `/* 여기서 CSS를 작성해보세요! */\n/* 힌트: #title, p, .box, .box p 선택자를 사용해보세요 */\n\n`,
+    hint: `#title {\n  color: #3b82f6;\n  font-size: 2rem;\n}\n\np {\n  color: #4b5563;\n  line-height: 1.6;\n}\n\n.box {\n  background: #f0fdf4;\n  border: 2px solid #86efac;\n  padding: 16px;\n  border-radius: 8px;\n}\n\n.box p {\n  color: #15803d;\n  font-weight: bold;\n}`,
+    challenge: "#title를 파란색으로, .box에 초록색 테두리와 배경을 적용해보세요!",
+  },
+  {
+    id: 2, category: "기초", title: "박스 모델 (Box Model)", emoji: "📦",
+    description: "모든 HTML 요소는 박스로 구성됩니다. margin, border, padding, content를 이해하면 레이아웃의 기본을 익힐 수 있습니다.",
+    theory: [
+      { label: "content", code: "width / height", desc: "실제 콘텐츠 영역" },
+      { label: "padding", code: "padding: 10px", desc: "콘텐츠와 테두리 사이 안쪽 여백" },
+      { label: "border", code: "border: 1px solid", desc: "요소의 테두리" },
+      { label: "margin", code: "margin: 20px", desc: "요소 바깥쪽 여백" },
+    ],
+    html: `<div class="outer">\n  <div class="inner">나는 박스입니다</div>\n</div>\n<div class="card">카드 A</div>\n<div class="card">카드 B</div>`,
+    initialCSS: `.outer {\n  background: #e0f2fe;\n  padding: 20px;\n}\n\n.inner {\n  background: #0ea5e9;\n  color: white;\n  width: 200px;\n  height: 80px;\n  padding: 10px;\n  margin: 10px;\n  border: 3px solid #0369a1;\n}\n\n.card {\n  background: #fef9c3;\n  border: 2px dashed #ca8a04;\n  padding: 16px;\n  margin: 8px;\n  width: 200px;\n}`,
+    hint: `.outer {\n  background: #e0f2fe;\n  padding: 30px;\n}\n\n.inner {\n  background: #0ea5e9;\n  color: white;\n  width: 200px;\n  height: 80px;\n  padding: 20px;\n  margin: 15px auto;\n  border: 4px solid #0369a1;\n  border-radius: 12px;\n  text-align: center;\n  box-sizing: border-box;\n}\n\n.card {\n  background: #fef9c3;\n  border: 2px dashed #ca8a04;\n  padding: 20px;\n  margin: 12px;\n  width: 200px;\n  border-radius: 8px;\n}`,
+    challenge: ".inner를 가운데 정렬하고, border-radius로 둥근 모서리를 만들어보세요!",
+  },
+  {
+    id: 3, category: "기초", title: "색상과 배경 (Color & Background)", emoji: "🎨",
+    description: "CSS에서 색상은 이름, HEX, RGB, HSL 등 다양한 방식으로 지정할 수 있습니다.",
+    theory: [
+      { label: "색상 이름", code: "color: red", desc: "CSS 내장 색상 이름 사용" },
+      { label: "HEX 코드", code: "color: #ff6b6b", desc: "16진수 RGB 값" },
+      { label: "RGB", code: "color: rgb(255, 107, 107)", desc: "빨강/초록/파랑 각 0-255" },
+      { label: "그라디언트", code: "background: linear-gradient(...)", desc: "점진적으로 변하는 배경색" },
+    ],
+    html: `<div class="hero">\n  <h2>그라디언트 배경</h2>\n  <p>아름다운 색상을 만들어보세요</p>\n</div>\n<div class="palette">\n  <div class="color-box" id="c1">HEX</div>\n  <div class="color-box" id="c2">RGB</div>\n  <div class="color-box" id="c3">HSL</div>\n</div>`,
+    initialCSS: `.hero {\n  background: linear-gradient(135deg, #667eea, #764ba2);\n  color: white;\n  padding: 40px;\n  text-align: center;\n  border-radius: 12px;\n  margin-bottom: 16px;\n}\n\n.palette {\n  display: flex;\n  gap: 10px;\n}\n\n.color-box {\n  flex: 1;\n  height: 80px;\n  border-radius: 8px;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  color: white;\n  font-weight: bold;\n}\n\n#c1 { background: #ff6b6b; }\n#c2 { background: rgb(72, 199, 142); }\n#c3 { background: hsl(210, 80%, 60%); }`,
+    hint: `.hero {\n  background: linear-gradient(135deg, #f093fb, #f5576c);\n  color: white;\n  padding: 50px;\n  text-align: center;\n  border-radius: 16px;\n  margin-bottom: 16px;\n  box-shadow: 0 8px 32px rgba(240,147,251,0.4);\n}\n\n.palette {\n  display: flex;\n  gap: 12px;\n}\n\n.color-box {\n  flex: 1; height: 100px; border-radius: 12px;\n  display: flex; align-items: center; justify-content: center;\n  color: white; font-weight: bold;\n}\n\n#c1 { background: #ff6b6b; }\n#c2 { background: rgb(72, 199, 142); }\n#c3 { background: hsl(210, 80%, 55%); }`,
+    challenge: "hero 섹션의 그라디언트 색상을 마음에 드는 색으로 바꿔보세요!",
+  },
+  {
+    id: 4, category: "레이아웃", title: "Flexbox", emoji: "↔️",
+    description: "Flexbox는 1차원 레이아웃을 만드는 강력한 도구입니다. 요소들을 가로/세로로 정렬하고 간격을 조절해보세요.",
+    theory: [
+      { label: "flex 컨테이너", code: "display: flex", desc: "자식 요소들이 flex 아이템이 됨" },
+      { label: "방향", code: "flex-direction: row | column", desc: "가로(row) 또는 세로(column) 배치" },
+      { label: "주축 정렬", code: "justify-content", desc: "flex-start / center / space-between / space-around" },
+      { label: "교차축 정렬", code: "align-items", desc: "stretch / center / flex-start / flex-end" },
+    ],
+    html: `<h3>네비게이션 바</h3>\n<nav class="navbar">\n  <span class="logo">🚀 MyApp</span>\n  <div class="nav-links">\n    <a href="#">홈</a><a href="#">소개</a><a href="#">연락</a>\n  </div>\n</nav>\n<h3 style="margin-top:12px">카드 갤러리</h3>\n<div class="gallery">\n  <div class="card">🍎 Apple</div>\n  <div class="card">🍊 Orange</div>\n  <div class="card">🍋 Lemon</div>\n  <div class="card">🍇 Grape</div>\n</div>`,
+    initialCSS: `.navbar {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  background: #1e293b;\n  color: white;\n  padding: 12px 24px;\n  border-radius: 8px;\n  margin-bottom: 16px;\n}\n.logo { font-weight: bold; font-size: 1.2rem; }\n.nav-links { display: flex; gap: 20px; }\n.nav-links a { color: #94a3b8; text-decoration: none; }\n\n.gallery {\n  display: flex;\n  flex-wrap: wrap;\n  gap: 12px;\n  justify-content: flex-start;\n}\n.card {\n  background: #f8fafc;\n  border: 2px solid #e2e8f0;\n  border-radius: 12px;\n  padding: 24px;\n  flex: 1;\n  min-width: 100px;\n  text-align: center;\n  font-size: 1.1rem;\n}`,
+    hint: `.navbar {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  background: linear-gradient(90deg, #1e293b, #334155);\n  color: white;\n  padding: 16px 28px;\n  border-radius: 12px;\n  margin-bottom: 20px;\n}\n.logo { font-weight: bold; font-size: 1.3rem; }\n.nav-links { display: flex; gap: 24px; }\n.nav-links a { color: #94a3b8; text-decoration: none; }\n\n.gallery {\n  display: flex; flex-wrap: wrap;\n  gap: 16px; justify-content: center;\n}\n.card {\n  background: linear-gradient(135deg, #f0f9ff, #e0f2fe);\n  border: 2px solid #bae6fd;\n  border-radius: 16px;\n  padding: 28px; flex: 1;\n  min-width: 100px; text-align: center; font-size: 1.2rem;\n}`,
+    challenge: "gallery의 justify-content를 center로 바꾸고, 카드에 그라디언트 배경을 적용해보세요!",
+  },
+  {
+    id: 5, category: "레이아웃", title: "CSS Grid", emoji: "🗂️",
+    description: "Grid는 2차원 레이아웃(행과 열)을 만드는 강력한 도구입니다. 복잡한 페이지 구조를 쉽게 만들 수 있습니다.",
+    theory: [
+      { label: "그리드 컨테이너", code: "display: grid", desc: "그리드 레이아웃 활성화" },
+      { label: "열 정의", code: "grid-template-columns: 1fr 1fr 1fr", desc: "3개의 동일한 너비 열 생성" },
+      { label: "간격", code: "gap: 16px", desc: "그리드 아이템 사이 간격" },
+      { label: "영역 병합", code: "grid-column: span 2", desc: "2개의 열을 차지하도록 확장" },
+    ],
+    html: `<div class="page-layout">\n  <header class="header">🏠 헤더</header>\n  <aside class="sidebar">📋 사이드바</aside>\n  <main class="main">\n    <div class="article-grid">\n      <div class="article featured">⭐ 주요 기사</div>\n      <div class="article">기사 1</div>\n      <div class="article">기사 2</div>\n      <div class="article">기사 3</div>\n    </div>\n  </main>\n  <footer class="footer">📌 푸터</footer>\n</div>`,
+    initialCSS: `.page-layout {\n  display: grid;\n  grid-template-columns: 180px 1fr;\n  gap: 12px;\n  min-height: 340px;\n}\n.header {\n  grid-column: 1 / -1;\n  background: #3b82f6; color: white;\n  padding: 16px; border-radius: 8px;\n  text-align: center; font-weight: bold;\n}\n.sidebar { background: #f1f5f9; padding: 16px; border-radius: 8px; }\n.main { background: white; padding: 16px; border-radius: 8px; border: 1px solid #e2e8f0; }\n.article-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; }\n.article { background: #f8fafc; border: 1px solid #e2e8f0; padding: 16px; border-radius: 8px; text-align: center; }\n.featured { grid-column: span 3; background: #fef3c7; border-color: #f59e0b; font-weight: bold; }\n.footer { grid-column: 1 / -1; background: #1e293b; color: white; padding: 12px; border-radius: 8px; text-align: center; }`,
+    hint: `.page-layout {\n  display: grid;\n  grid-template-columns: 200px 1fr;\n  gap: 16px; min-height: 340px;\n}\n.header {\n  grid-column: 1 / -1;\n  background: linear-gradient(90deg, #3b82f6, #8b5cf6);\n  color: white; padding: 20px; border-radius: 12px;\n  text-align: center; font-weight: bold; font-size: 1.2rem;\n}\n.sidebar { background: #f1f5f9; padding: 20px; border-radius: 12px; border-left: 4px solid #3b82f6; }\n.main { background: white; padding: 20px; border-radius: 12px; border: 1px solid #e2e8f0; }\n.article-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; }\n.article { background: #f8fafc; border: 1px solid #e2e8f0; padding: 20px; border-radius: 10px; text-align: center; }\n.featured { grid-column: span 3; background: linear-gradient(135deg,#fef3c7,#fde68a); border-color: #f59e0b; font-weight: bold; }\n.footer { grid-column: 1 / -1; background: #1e293b; color: #94a3b8; padding: 16px; border-radius: 12px; text-align: center; }`,
+    challenge: "헤더에 그라디언트를 추가하고, .featured 기사를 더 돋보이게 꾸며보세요!",
+  },
+  {
+    id: 6, category: "고급", title: "전환 & 애니메이션", emoji: "✨",
+    description: "transition과 animation을 활용해 요소에 부드러운 움직임과 생동감을 더해봅시다.",
+    theory: [
+      { label: "transition", code: "transition: all 0.3s ease", desc: "속성 변화를 부드럽게 처리" },
+      { label: "@keyframes", code: "@keyframes name { from {} to {} }", desc: "애니메이션 단계 정의" },
+      { label: "animation", code: "animation: name 1s infinite", desc: "애니메이션 적용 및 반복" },
+      { label: "transform", code: "transform: scale(1.1) rotate(5deg)", desc: "크기/회전/이동 변환" },
+    ],
+    html: `<div class="demo-section">\n  <h3>호버 효과 (마우스를 올려보세요!)</h3>\n  <div class="btn-row">\n    <button class="btn btn-primary">Primary</button>\n    <button class="btn btn-outline">Outline</button>\n    <button class="btn btn-glow">Glow</button>\n  </div>\n</div>\n<div class="demo-section">\n  <h3>애니메이션 카드</h3>\n  <div class="anim-row">\n    <div class="pulse-box">💓 펄스</div>\n    <div class="spin-box">🌀 회전</div>\n    <div class="bounce-box">⬆️ 바운스</div>\n  </div>\n</div>`,
+    initialCSS: `@keyframes pulse {\n  0%,100% { transform: scale(1); }\n  50% { transform: scale(1.08); }\n}\n@keyframes spin {\n  from { transform: rotate(0deg); }\n  to { transform: rotate(360deg); }\n}\n@keyframes bounce {\n  0%,100% { transform: translateY(0); }\n  50% { transform: translateY(-16px); }\n}\n.demo-section { margin-bottom: 24px; }\n.btn-row, .anim-row { display: flex; gap: 12px; flex-wrap: wrap; }\n.btn { padding: 10px 24px; border-radius: 8px; border: none; cursor: pointer; font-size: 1rem; transition: all 0.25s ease; }\n.btn-primary { background: #3b82f6; color: white; }\n.btn-primary:hover { background: #1d4ed8; transform: translateY(-3px); box-shadow: 0 8px 20px rgba(59,130,246,0.4); }\n.btn-outline { background: transparent; color: #3b82f6; border: 2px solid #3b82f6; }\n.btn-outline:hover { background: #3b82f6; color: white; }\n.btn-glow { background: #8b5cf6; color: white; }\n.btn-glow:hover { box-shadow: 0 0 20px rgba(139,92,246,0.7); transform: scale(1.05); }\n.pulse-box,.spin-box,.bounce-box { background: #f0f9ff; border: 2px solid #bae6fd; padding: 20px; border-radius: 12px; text-align: center; flex: 1; min-width: 80px; }\n.pulse-box { animation: pulse 1.5s infinite; }\n.spin-box { animation: spin 2s linear infinite; }\n.bounce-box { animation: bounce 1s ease-in-out infinite; }`,
+    hint: `@keyframes pulse {\n  0%,100% { transform: scale(1); }\n  50% { transform: scale(1.1); box-shadow: 0 0 20px rgba(239,68,68,0.5); }\n}\n@keyframes spin {\n  from { transform: rotate(0deg); }\n  to { transform: rotate(360deg); }\n}\n@keyframes bounce {\n  0%,100% { transform: translateY(0); }\n  50% { transform: translateY(-20px); }\n}\n.demo-section { margin-bottom: 28px; }\n.btn-row,.anim-row { display: flex; gap: 16px; flex-wrap: wrap; }\n.btn { padding: 12px 28px; border-radius: 10px; border: none; cursor: pointer; font-size: 1rem; font-weight: 600; transition: all 0.3s; }\n.btn-primary { background: #3b82f6; color: white; }\n.btn-primary:hover { background: #1d4ed8; transform: translateY(-4px); box-shadow: 0 10px 24px rgba(59,130,246,0.45); }\n.btn-outline { background: transparent; color: #3b82f6; border: 2px solid #3b82f6; }\n.btn-outline:hover { background: #3b82f6; color: white; }\n.btn-glow { background: #8b5cf6; color: white; }\n.btn-glow:hover { box-shadow: 0 0 28px rgba(139,92,246,0.75); transform: scale(1.07); }\n.pulse-box,.spin-box,.bounce-box { padding: 24px; border-radius: 16px; text-align: center; flex:1; min-width:80px; }\n.pulse-box { animation: pulse 1.5s infinite; background:#fff1f2; border:2px solid #fca5a5; }\n.spin-box { animation: spin 2s linear infinite; background:#f0fdf4; border:2px solid #86efac; }\n.bounce-box { animation: bounce 0.8s ease-in-out infinite; background:#fefce8; border:2px solid #fde047; }`,
+    challenge: "새로운 @keyframes 애니메이션을 만들어서 적용해보세요!",
+  },
+];
+
+const PREVIEW_WRAPPER = (html, css) =>
+  `<!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8"><style>*{box-sizing:border-box;margin:0;padding:0;}body{font-family:'Segoe UI',sans-serif;padding:16px;background:#fff;font-size:14px;line-height:1.5;}h3{margin-bottom:10px;color:#374151;font-size:0.9rem;}a{text-decoration:none;}button{font-family:inherit;}${css}</style></head><body>${html}</body></html>`;
+
+// ── 이름 입력 모달 ──
+function NameModal({ onConfirm }) {
+  const [name, setName] = useState("");
+  return (
+    <div style={{ position:"fixed", inset:0, background:"rgba(15,23,42,0.7)", display:"flex", alignItems:"center", justifyContent:"center", zIndex:999 }}>
+      <div style={{ background:"white", borderRadius:"20px", padding:"40px", width:"380px", boxShadow:"0 20px 60px rgba(0,0,0,0.3)", textAlign:"center" }}>
+        <div style={{ fontSize:"3rem", marginBottom:"12px" }}>🎓</div>
+        <h2 style={{ fontSize:"1.3rem", color:"#0f172a", marginBottom:"8px" }}>CSS 마스터에 오신 걸 환영합니다!</h2>
+        <p style={{ color:"#64748b", fontSize:"0.88rem", marginBottom:"28px", lineHeight:"1.5" }}>
+          학습을 시작하기 전에 이름을 입력해주세요.<br />제출 시 선생님께 전달됩니다.
+        </p>
+        <input
+          value={name}
+          onChange={e => setName(e.target.value)}
+          onKeyDown={e => e.key === "Enter" && name.trim() && onConfirm(name.trim())}
+          placeholder="이름을 입력하세요"
+          autoFocus
+          style={{
+            width:"100%", padding:"12px 16px", border:"2px solid #e2e8f0",
+            borderRadius:"10px", fontSize:"1rem", outline:"none",
+            marginBottom:"16px", textAlign:"center",
+            transition:"border 0.2s",
+          }}
+          onFocus={e => e.target.style.borderColor = "#3b82f6"}
+          onBlur={e => e.target.style.borderColor = "#e2e8f0"}
+        />
+        <button
+          onClick={() => name.trim() && onConfirm(name.trim())}
+          disabled={!name.trim()}
+          style={{
+            width:"100%", padding:"12px", background: name.trim() ? "linear-gradient(135deg,#3b82f6,#8b5cf6)" : "#e2e8f0",
+            border:"none", borderRadius:"10px", color: name.trim() ? "white" : "#94a3b8",
+            fontSize:"1rem", fontWeight:"600", cursor: name.trim() ? "pointer" : "default",
+            transition:"all 0.2s",
+          }}
+        >
+          학습 시작하기 →
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ── 제출 완료 토스트 ──
+function Toast({ msg, type }) {
+  return (
+    <div style={{
+      position:"fixed", bottom:"24px", left:"50%", transform:"translateX(-50%)",
+      background: type === "success" ? "#22c55e" : type === "error" ? "#ef4444" : "#3b82f6",
+      color:"white", padding:"12px 24px", borderRadius:"12px",
+      boxShadow:"0 8px 24px rgba(0,0,0,0.2)", fontSize:"0.9rem", fontWeight:"500",
+      zIndex:9999, whiteSpace:"nowrap",
+    }}>{msg}</div>
+  );
+}
+
+function App() {
+  const [studentName, setStudentName] = useState("");
+  const [showNameModal, setShowNameModal] = useState(true);
+  const [currentLesson, setCurrentLesson] = useState(0);
+  const [cssCode, setCssCode] = useState(lessons[0].initialCSS);
+  const [showHint, setShowHint] = useState(false);
+  const [completed, setCompleted] = useState([]);
+  const [activeTab, setActiveTab] = useState("editor");
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+  const [toast, setToast] = useState(null);
+  const previewRef = useRef(null);
+  const textareaRef = useRef(null);
+  const lesson = lessons[currentLesson];
+
+  useEffect(() => {
+    setCssCode(lesson.initialCSS);
+    setShowHint(false);
+    setActiveTab("editor");
+  }, [currentLesson]);
+
+  useEffect(() => {
+    if (previewRef.current) {
+      previewRef.current.srcdoc = PREVIEW_WRAPPER(lesson.html, cssCode);
+    }
+  }, [cssCode, lesson]);
+
+  const showToast = (msg, type = "success") => {
+    setToast({ msg, type });
+    setTimeout(() => setToast(null), 3000);
+  };
+
+  const handleHint = () => { setShowHint(true); setCssCode(lesson.hint); };
+  const handleReset = () => { setCssCode(lesson.initialCSS); setShowHint(false); };
+
+  const handleComplete = () => {
+    if (!completed.includes(lesson.id)) setCompleted([...completed, lesson.id]);
+    if (currentLesson < lessons.length - 1) setCurrentLesson(currentLesson + 1);
+  };
+
+  const handleSubmit = async () => {
+    if (APPS_SCRIPT_URL === "YOUR_SCRIPT_URL_HERE") {
+      showToast("⚠️ Apps Script URL을 설정해주세요!", "error"); return;
+    }
+    setSubmitting(true);
+    showToast("📤 제출 중...", "info");
+    try {
+      await fetch(APPS_SCRIPT_URL, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          studentName,
+          lessonNumber: lesson.id,
+          lessonTitle: lesson.title,
+          cssCode,
+          completedCount: completed.length,
+        }),
+      });
+      showToast(`✅ ${studentName}님의 코드가 제출되었습니다!`);
+    } catch {
+      showToast("❌ 제출 실패. 인터넷 연결을 확인해주세요.", "error");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === "Tab") {
+      e.preventDefault();
+      const s = e.target.selectionStart, en = e.target.selectionEnd;
+      const v = cssCode.substring(0, s) + "  " + cssCode.substring(en);
+      setCssCode(v);
+      setTimeout(() => {
+        if (textareaRef.current) {
+          textareaRef.current.selectionStart = s + 2;
+          textareaRef.current.selectionEnd = s + 2;
+        }
+      }, 0);
+    }
+  };
+
+  const categories = [...new Set(lessons.map(l => l.category))];
+  const progress = Math.round((completed.length / lessons.length) * 100);
+
+  return (
+    <div style={{ display:"flex", height:"100vh", fontFamily:"'Segoe UI',sans-serif", background:"#f8fafc", overflow:"hidden", position:"relative" }}>
+
+      {/* 이름 모달 */}
+      {showNameModal && (
+        <NameModal onConfirm={name => { setStudentName(name); setShowNameModal(false); }} />
+      )}
+
+      {/* 토스트 알림 */}
+      {toast && <Toast msg={toast.msg} type={toast.type} />}
+
+      {/* ── 사이드바 ── */}
+      {sidebarOpen && (
+        <div style={{ width:"230px", background:"#1e293b", color:"white", overflowY:"auto", flexShrink:0, display:"flex", flexDirection:"column" }}>
+          <div style={{ padding:"16px 16px 12px", borderBottom:"1px solid #334155" }}>
+            <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", marginBottom:"4px" }}>
+              <div style={{ fontSize:"1rem", fontWeight:"700", color:"#f1f5f9" }}>🎓 CSS 마스터</div>
+              <button onClick={() => setSidebarOpen(false)} style={{ background:"none", border:"none", color:"#64748b", cursor:"pointer", fontSize:"1rem" }}>✕</button>
+            </div>
+            {studentName && (
+              <div style={{ fontSize:"0.75rem", color:"#7dd3fc", marginBottom:"6px" }}>👤 {studentName}</div>
+            )}
+            <div style={{ fontSize:"0.72rem", color:"#64748b" }}>{completed.length}/{lessons.length} 완료 · {progress}%</div>
+            <div style={{ height:"4px", background:"#334155", borderRadius:"4px", marginTop:"6px", overflow:"hidden" }}>
+              <div style={{ height:"100%", background:"linear-gradient(90deg,#3b82f6,#8b5cf6)", width:`${progress}%`, borderRadius:"4px", transition:"width 0.5s" }} />
+            </div>
+          </div>
+
+          {categories.map(cat => (
+            <div key={cat}>
+              <div style={{ padding:"10px 16px 5px", fontSize:"0.67rem", color:"#64748b", textTransform:"uppercase", letterSpacing:"0.08em", fontWeight:"600" }}>{cat}</div>
+              {lessons.filter(l => l.category === cat).map(l => {
+                const idx = lessons.indexOf(l);
+                const isActive = currentLesson === idx;
+                const isDone = completed.includes(l.id);
+                return (
+                  <button key={l.id} onClick={() => setCurrentLesson(idx)} style={{
+                    width:"100%", textAlign:"left", background: isActive ? "#3b82f6" : "transparent",
+                    border:"none", color: isActive ? "white" : isDone ? "#86efac" : "#cbd5e1",
+                    padding:"8px 16px", cursor:"pointer", fontSize:"0.83rem",
+                    display:"flex", alignItems:"center", gap:"8px",
+                    borderLeft: isActive ? "3px solid #60a5fa" : "3px solid transparent",
+                  }}>
+                    <span>{l.emoji}</span>
+                    <span style={{ flex:1 }}>{l.title}</span>
+                    {isDone && <span style={{ fontSize:"0.68rem", color:"#86efac" }}>✓</span>}
+                  </button>
+                );
+              })}
+            </div>
+          ))}
+
+          {/* 전체 제출 버튼 */}
+          <div style={{ padding:"16px", marginTop:"auto", borderTop:"1px solid #334155" }}>
+            <button
+              onClick={handleSubmit}
+              disabled={submitting}
+              style={{
+                width:"100%", padding:"10px", background: submitting ? "#334155" : "linear-gradient(135deg,#22c55e,#16a34a)",
+                border:"none", borderRadius:"10px", color:"white", fontSize:"0.85rem",
+                fontWeight:"600", cursor: submitting ? "default" : "pointer",
+              }}
+            >
+              {submitting ? "제출 중..." : "📤 현재 코드 제출"}
+            </button>
+            <div style={{ fontSize:"0.68rem", color:"#475569", textAlign:"center", marginTop:"6px" }}>
+              선생님 구글 시트로 전송됩니다
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── 메인 영역 ── */}
+      <div style={{ flex:1, display:"flex", flexDirection:"column", overflow:"hidden", minWidth:0 }}>
+
+        {/* 헤더 */}
+        <div style={{ background:"white", borderBottom:"1px solid #e2e8f0", padding:"10px 16px", display:"flex", alignItems:"center", gap:"10px", flexShrink:0 }}>
+          {!sidebarOpen && (
+            <button onClick={() => setSidebarOpen(true)} style={{ background:"#f1f5f9", border:"1px solid #e2e8f0", borderRadius:"8px", padding:"6px 10px", cursor:"pointer", color:"#475569", fontSize:"0.9rem" }}>☰</button>
+          )}
+          <span style={{ fontSize:"1.4rem" }}>{lesson.emoji}</span>
+          <div style={{ flex:1, minWidth:0 }}>
+            <div style={{ fontWeight:"700", color:"#0f172a", fontSize:"1rem" }}>{lesson.title}</div>
+            <div style={{ fontSize:"0.75rem", color:"#64748b", whiteSpace:"nowrap", overflow:"hidden", textOverflow:"ellipsis" }}>{lesson.description}</div>
+          </div>
+          <div style={{ display:"flex", gap:"6px", flexShrink:0, alignItems:"center" }}>
+            {studentName && (
+              <span style={{ fontSize:"0.78rem", color:"#64748b", background:"#f1f5f9", padding:"4px 10px", borderRadius:"20px", border:"1px solid #e2e8f0" }}>
+                👤 {studentName}
+              </span>
+            )}
+            <button onClick={handleReset} style={{ padding:"7px 12px", background:"#f1f5f9", border:"1px solid #e2e8f0", borderRadius:"8px", cursor:"pointer", color:"#475569", fontSize:"0.78rem", fontWeight:"500" }}>↩ 초기화</button>
+            <button onClick={handleHint} style={{ padding:"7px 12px", background:"#fef3c7", border:"1px solid #fcd34d", borderRadius:"8px", cursor:"pointer", color:"#92400e", fontSize:"0.78rem", fontWeight:"500" }}>💡 힌트</button>
+            <button onClick={handleSubmit} disabled={submitting} style={{ padding:"7px 12px", background: submitting ? "#e2e8f0" : "#dcfce7", border:"1px solid #86efac", borderRadius:"8px", cursor:"pointer", color:"#15803d", fontSize:"0.78rem", fontWeight:"600" }}>
+              📤 제출
+            </button>
+            <button onClick={handleComplete} style={{ padding:"7px 12px", background:"linear-gradient(135deg,#3b82f6,#8b5cf6)", border:"none", borderRadius:"8px", cursor:"pointer", color:"white", fontSize:"0.78rem", fontWeight:"600" }}>
+              {currentLesson < lessons.length - 1 ? "완료 & 다음 →" : "🎉 완료!"}
+            </button>
+          </div>
+        </div>
+
+        {/* 콘텐츠 */}
+        <div style={{ flex:1, display:"flex", overflow:"hidden" }}>
+
+          {/* 왼쪽: 편집기/이론 */}
+          <div style={{ width:"48%", display:"flex", flexDirection:"column", borderRight:"1px solid #e2e8f0", overflow:"hidden", flexShrink:0 }}>
+            <div style={{ display:"flex", background:"#f8fafc", borderBottom:"1px solid #e2e8f0", flexShrink:0 }}>
+              {[{ id:"editor", label:"✏️ CSS 편집기" }, { id:"theory", label:"📖 개념 정리" }].map(tab => (
+                <button key={tab.id} onClick={() => setActiveTab(tab.id)} style={{
+                  flex:1, padding:"10px", border:"none",
+                  background: activeTab === tab.id ? "white" : "transparent",
+                  cursor:"pointer", fontSize:"0.79rem",
+                  fontWeight: activeTab === tab.id ? "600" : "400",
+                  color: activeTab === tab.id ? "#3b82f6" : "#64748b",
+                  borderBottom: activeTab === tab.id ? "2px solid #3b82f6" : "2px solid transparent",
+                }}>{tab.label}</button>
+              ))}
+            </div>
+
+            {activeTab === "editor" ? (
+              <div style={{ flex:1, display:"flex", flexDirection:"column", overflow:"hidden" }}>
+                <div style={{ padding:"8px 16px", background:"#eff6ff", borderBottom:"1px solid #bfdbfe", fontSize:"0.77rem", color:"#1d4ed8", flexShrink:0 }}>
+                  🎯 <strong>미션:</strong> {lesson.challenge}
+                </div>
+                {showHint && (
+                  <div style={{ padding:"6px 16px", background:"#fef9c3", borderBottom:"1px solid #fde047", fontSize:"0.74rem", color:"#713f12", flexShrink:0 }}>
+                    💡 힌트 적용됨 — 코드를 분석하며 학습해보세요!
+                  </div>
+                )}
+                <textarea
+                  ref={textareaRef}
+                  value={cssCode}
+                  onChange={e => setCssCode(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                  spellCheck={false}
+                  style={{
+                    flex:1, border:"none", outline:"none", padding:"14px", resize:"none",
+                    fontFamily:"'Courier New','Monaco',monospace", fontSize:"0.82rem",
+                    lineHeight:"1.65", background:"#0f172a", color:"#e2e8f0", overflowY:"auto",
+                  }}
+                />
+                <div style={{ padding:"5px 14px", background:"#1e293b", color:"#475569", fontSize:"0.68rem", display:"flex", gap:"16px", flexShrink:0 }}>
+                  <span>Tab: 들여쓰기</span><span>실시간 미리보기 ✓</span>
+                </div>
+              </div>
+            ) : (
+              <div style={{ flex:1, overflowY:"auto", padding:"16px" }}>
+                <p style={{ fontSize:"0.83rem", color:"#475569", marginBottom:"14px", lineHeight:"1.6" }}>{lesson.description}</p>
+                <div style={{ fontWeight:"600", color:"#0f172a", marginBottom:"10px", fontSize:"0.86rem" }}>핵심 속성</div>
+                {lesson.theory.map((t, i) => (
+                  <div key={i} style={{ background:"#f8fafc", border:"1px solid #e2e8f0", borderRadius:"10px", padding:"10px 14px", marginBottom:"8px" }}>
+                    <div style={{ display:"flex", alignItems:"center", gap:"8px", marginBottom:"4px", flexWrap:"wrap" }}>
+                      <span style={{ background:"#dbeafe", color:"#1d4ed8", padding:"2px 7px", borderRadius:"4px", fontSize:"0.7rem", fontWeight:"600" }}>{t.label}</span>
+                      <code style={{ background:"#1e293b", color:"#7dd3fc", padding:"2px 7px", borderRadius:"4px", fontSize:"0.75rem" }}>{t.code}</code>
+                    </div>
+                    <div style={{ fontSize:"0.77rem", color:"#64748b" }}>{t.desc}</div>
+                  </div>
+                ))}
+                <div style={{ marginTop:"16px", background:"#fefce8", border:"1px solid #fde047", borderRadius:"10px", padding:"12px" }}>
+                  <div style={{ fontWeight:"600", color:"#713f12", marginBottom:"6px", fontSize:"0.82rem" }}>💡 HTML 구조</div>
+                  <pre style={{ fontFamily:"monospace", fontSize:"0.72rem", color:"#44403c", overflowX:"auto", whiteSpace:"pre-wrap", wordBreak:"break-all" }}>{lesson.html}</pre>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* 오른쪽: 미리보기 */}
+          <div style={{ flex:1, display:"flex", flexDirection:"column", overflow:"hidden", minWidth:0 }}>
+            <div style={{ padding:"8px 16px", background:"#f8fafc", borderBottom:"1px solid #e2e8f0", fontSize:"0.77rem", color:"#64748b", display:"flex", alignItems:"center", gap:"8px", flexShrink:0 }}>
+              <span style={{ width:"8px", height:"8px", background:"#22c55e", borderRadius:"50%", display:"inline-block" }}></span>
+              실시간 미리보기
+            </div>
+            <iframe ref={previewRef} title="preview" sandbox="allow-scripts" style={{ flex:1, border:"none", background:"white" }} />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(<App />);
+</script>
+</body>
+</html>
